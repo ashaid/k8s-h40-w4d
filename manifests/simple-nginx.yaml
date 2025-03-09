@@ -1,0 +1,33 @@
+apiVersion: apps/v1 # The API version for Deployment resources
+kind: Deployment # The type of resource being defined
+metadata:
+  name: nginx-deployment # Name of the deployment
+  labels: # Labels to identify this deployment
+    app: nginx # Key-value label
+spec: # Specification for the Deployment
+  replicas: 2 # How many identical pods to run (similar to docker-compose scale)
+  selector: # How the Deployment finds which Pods to manage
+    matchLabels: # Pods with this label will be managed by this deployment
+      app: nginx
+  template: # Template for the Pods that will be created
+    metadata:
+      labels: # Labels applied to the pods created by this template
+        app: nginx
+    spec: # Specification for the Pod
+      containers: # List of containers in the Pod (like container definitions in Docker)
+        - name: nginx # Container name
+          image: nginx:alpine # Docker image to use (same as in Docker)
+          ports: # Ports to expose (similar to EXPOSE in Dockerfile)
+            - containerPort: 80
+--- # YAML separator to define multiple resources in one file
+apiVersion: v1 # API version for Service resource
+kind: Service # The type of resource: Service
+metadata:
+  name: nginx-service # Name of the service
+spec:
+  selector: # Defines which Pods this Service targets
+    app: nginx # Targets Pods with label app=nginx
+  ports:
+    - port: 80 # Port the Service listens on
+      targetPort: 80 # Port on the Pod to forward to (similar to EXPOSE in Docker)
+  type: NodePort # Makes the Service accessible outside the cluster (like -p in docker run)

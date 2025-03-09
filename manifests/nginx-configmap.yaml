@@ -1,0 +1,53 @@
+apiVersion: apps/v1 # API version for Deployment resources
+kind: Deployment # Type of resource
+metadata:
+  name: nginx-configmap-deployment # Name of this deployment
+  labels:
+    app: nginx-configmap # Label for this deployment
+spec:
+  replicas: 2 # Run 2 identical pods
+  selector:
+    matchLabels:
+      app: nginx-configmap # Manages pods with this label
+  template:
+    metadata:
+      labels:
+        app: nginx-configmap # Label for pods created by this template
+    spec:
+      containers:
+        - name: nginx # Container name
+          image: nginx:alpine # Docker image to use
+          ports:
+            - containerPort: 80 # Port to expose
+          volumeMounts: # Mount volumes into the container
+            - name: nginx-config-volume # Name of the volume to mount
+              mountPath: /etc/nginx/conf.d/default.conf # Where to mount it in the container
+              subPath: nginx.conf # Only mount the specified file from the volume
+            - name: nginx-html-volume # Another volume mount
+              mountPath: /usr/share/nginx/html/index.html # Mount destination
+              subPath: index.html # Only mount this specific file
+      volumes: # Define volumes used by containers in the pod
+        - name: nginx-config-volume # Name of the volume (referenced in volumeMounts)
+          configMap: # This volume comes from a ConfigMap
+            name: nginx-config # Which ConfigMap to use
+            items: # Specify which keys from the ConfigMap to use
+              - key: nginx.conf # The key in the ConfigMap
+                path: nginx.conf # The file path to create
+        - name: nginx-html-volume # Another volume
+          configMap:
+            name: nginx-config # Same ConfigMap as source
+            items:
+              - key: index.html # Different key from the ConfigMap
+                path: index.html # Different file path
+---
+apiVersion: v1 # API version for Service
+kind: Service # Type of resource
+metadata:
+  name: nginx-configmap-service # Service name
+spec:
+  selector:
+    app: nginx-configmap # Targets pods with this label
+  ports:
+    - port: 80 # Service port
+      targetPort: 80 # Pod port
+  type: NodePort # Make it accessible from outside
