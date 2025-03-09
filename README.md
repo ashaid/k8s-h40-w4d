@@ -55,11 +55,7 @@ To test the ConfigMap example:
    ```bash
    minikube service nginx-configmap-service --url
    ```
-
-## Tutorial Steps
-
-For detailed instructions, follow the [Kubernetes Starter Guide](docs/kubernetes-starter-guide.md).
-
+   
 ## Cleanup
 
 When you're done:
