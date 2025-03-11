@@ -8,8 +8,8 @@
 1. Clone this repository:
 
    ```bash
-   git clone https://github.com/yourusername/k8s-starter.git
-   cd k8s-starter
+   git clone https://github.com/yourusername/k8s-h40-w4d.git
+   cd k8s-h40-w4d
    ```
 
 2. Start Minikube:
